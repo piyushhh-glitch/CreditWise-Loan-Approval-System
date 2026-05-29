@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 
 # -----------------------------
@@ -21,11 +20,11 @@ st.set_page_config(
 
 st.title("💳 CreditWise Loan Approval System")
 st.write(
-    "Predict whether a loan application is likely to be approved using a Naive Bayes model."
+    "Predict whether a loan application is likely to be approved using a Gaussian Naive Bayes model."
 )
 
 # -----------------------------
-# User Inputs
+# Inputs
 # -----------------------------
 st.subheader("Applicant Details")
 
@@ -51,6 +50,14 @@ existing_loans = st.number_input(
 
 credit_score = st.number_input(
     "Credit Score", min_value=300, max_value=900, value=750
+)
+
+dti_ratio = st.slider(
+    "DTI Ratio",
+    min_value=0.10,
+    max_value=0.60,
+    value=0.35,
+    step=0.01
 )
 
 savings = st.number_input(
@@ -109,18 +116,11 @@ employer_category = st.selectbox(
 # -----------------------------
 if st.button("Predict Loan Approval"):
 
-    # Education Encoding
     education_encoded = 1 if education_level == "Yes" else 0
-
-    # Feature Engineering
-    dti_ratio = loan_amount / max(
-        (applicant_income + coapplicant_income), 1
-    )
 
     dti_ratio_sq = dti_ratio ** 2
     credit_score_sq = credit_score ** 2
 
-    # Base Features
     data = {
         "Applicant_Income": applicant_income,
         "Coapplicant_Income": coapplicant_income,
@@ -136,7 +136,7 @@ if st.button("Predict Loan Approval"):
         "Credit_Score_sq": credit_score_sq
     }
 
-    # Initialize remaining columns
+    # Initialize all remaining columns
     for col in feature_names:
         if col not in data:
             data[col] = 0
@@ -183,10 +183,10 @@ if st.button("Predict Loan Approval"):
     elif employer_category == "Unemployed":
         data["Employer_Category_Unemployed"] = 1
 
-    # Create DataFrame
+    # DataFrame
     input_df = pd.DataFrame([data])
 
-    # Match exact training order
+    # Match exact training feature order
     input_df = input_df[feature_names]
 
     # Scale
@@ -212,11 +212,9 @@ if st.button("Predict Loan Approval"):
         )
 
     st.subheader("Model Confidence")
-
     st.write(
         f"Approval Probability: {probabilities[1] * 100:.2f}%"
     )
-
     st.write(
         f"Rejection Probability: {probabilities[0] * 100:.2f}%"
     )
