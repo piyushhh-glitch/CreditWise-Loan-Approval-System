@@ -328,7 +328,22 @@ div[data-testid="stMetric"] {{
     box-shadow: 0 2px 8px rgba(90,156,197,0.14) !important;
 }}
 div[data-testid="stMetricLabel"] p {{ color: {P['muted']} !important; font-size: 0.78rem !important; }}
-div[data-testid="stMetricValue"]  {{ color: {P['text']}  !important; }}
+div[data-testid="stMetricLabel"] {{
+    color: #1A4A6E !important;
+    opacity: 1 !important;
+}}
+
+div[data-testid="stMetricLabel"] p {{
+    color: #1A4A6E !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}}
+
+div[data-testid="stMetricValue"] {{
+    color: #0D1F2D !important;
+    font-weight: 700 !important;
+}}
+
 
 .stButton > button {{
     background: linear-gradient(135deg, {P['baby']} 0%, {P['sky']} 100%) !important;
@@ -888,11 +903,46 @@ with tab_eda:
     yes_c = (raw_df["Loan_Approved"] == "Yes").sum()
     no_c  = len(raw_df) - yes_c
     d1,d2,d3,d4,d5 = st.columns(5)
-    d1.metric("Total Records",    f"{len(raw_df):,}")
-    d2.metric("Approved",         f"{yes_c:,}")
-    d3.metric("Rejected",         f"{no_c:,}")
-    d4.metric("Approval Rate",    f"{yes_c/len(raw_df):.1%}")
-    d5.metric("Features Used",    "27")
+
+    with d1:
+        st.markdown(f"""
+        <div class="tile">
+            <div class="tile-lbl">Total Records</div>
+            <div class="tile-val">{len(raw_df):,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d2:
+        st.markdown(f"""
+        <div class="tile">
+            <div class="tile-lbl">Approved</div>
+            <div class="tile-val">{yes_c:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d3:
+        st.markdown(f"""
+        <div class="tile">
+            <div class="tile-lbl">Rejected</div>
+            <div class="tile-val">{no_c:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d4:
+        st.markdown(f"""
+        <div class="tile">
+            <div class="tile-lbl">Approval Rate</div>
+            <div class="tile-val">{yes_c/len(raw_df):.1%}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d5:
+        st.markdown("""
+        <div class="tile">
+            <div class="tile-lbl">Features Used</div>
+            <div class="tile-val">27</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown('<span class="sec-lbl">Approval & Demographics</span>', unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3)
